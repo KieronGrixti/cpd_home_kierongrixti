@@ -5,6 +5,7 @@ import '../models/game.dart';
 import '../providers/cart_provider.dart';
 
 import 'profile_screen.dart';
+import '../services/notification_service.dart';
 
 class StoreScreen extends StatelessWidget {
   const StoreScreen({super.key});
@@ -161,7 +162,10 @@ class _GameCard extends StatelessWidget {
             child: SizedBox(
               width: double.infinity,
               child: FilledButton(
-                onPressed: () => cart.add(game),
+                onPressed: () async {
+                  cart.add(game);
+                  await NotificationService.showAddedToCart(game.title);
+                },
                 style: FilledButton.styleFrom(
                   backgroundColor: cs.primary,
                   foregroundColor: Colors.white,

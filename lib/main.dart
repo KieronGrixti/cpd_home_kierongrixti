@@ -5,7 +5,12 @@ import 'providers/cart_provider.dart';
 import 'screens/cart_screen.dart';
 import 'screens/store_screen.dart';
 
-void main() {
+import 'services/notification_service.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.init();
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => CartProvider(),
