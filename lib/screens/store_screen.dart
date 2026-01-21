@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../models/game.dart';
 import '../providers/cart_provider.dart';
-
-import 'profile_screen.dart';
 import '../services/notification_service.dart';
 
 class StoreScreen extends StatelessWidget {
@@ -39,44 +37,17 @@ class StoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = context.watch<CartProvider>();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Game Store'),
-        actions: [
-          IconButton(
-            tooltip: 'Profile',
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const ProfileScreen()),
-              );
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: Center(
-              child: Text(
-                'Cart: ${cart.items.length}',
-                style: const TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(12),
-        child: GridView.builder(
-          itemCount: games.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.75, // uniform card size
-          ),
-          itemBuilder: (context, index) => _GameCard(game: games[index]),
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: GridView.builder(
+        itemCount: games.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 0.75,
         ),
+        itemBuilder: (context, index) => _GameCard(game: games[index]),
       ),
     );
   }
@@ -93,29 +64,29 @@ class _GameCard extends StatelessWidget {
 
     return Card(
       elevation: 2,
-      color: const Color(0xFFF7FAFF), // very light blue-ish white
+      color: const Color(0xFFF7FAFF),
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // FIXED image area using AspectRatio (consistent look)
           AspectRatio(
-            aspectRatio: 16 / 10, // fixed image height relative to card width
+            aspectRatio: 16 / 10,
             child: Stack(
               children: [
                 Positioned.fill(
                   child: Image.asset(
                     game.imageAsset,
                     fit: BoxFit.cover,
+                    semanticLabel: '${game.title} cover image',
                   ),
                 ),
-                // price badge
                 Positioned(
                   top: 10,
                   left: 10,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: cs.primary.withOpacity(0.9),
                       borderRadius: BorderRadius.circular(999),
@@ -133,12 +104,10 @@ class _GameCard extends StatelessWidget {
               ],
             ),
           ),
-
-          // Title area (fixed height so cards stay equal)
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
             child: SizedBox(
-              height: 42, // keeps layout consistent
+              height: 42,
               child: Center(
                 child: Text(
                   game.title,
@@ -146,17 +115,14 @@ class _GameCard extends StatelessWidget {
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w900,
                     fontSize: 14,
                   ),
                 ),
               ),
             ),
           ),
-
-          const Spacer(), // pushes button to bottom
-
-          // Button pinned at bottom
+          const Spacer(),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
             child: SizedBox(
@@ -176,7 +142,7 @@ class _GameCard extends StatelessWidget {
                 ),
                 child: const Text(
                   'Add',
-                  style: TextStyle(fontWeight: FontWeight.w800),
+                  style: TextStyle(fontWeight: FontWeight.w900),
                 ),
               ),
             ),

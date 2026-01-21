@@ -2,8 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,7 +15,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ImagePicker _picker = ImagePicker();
   File? _profileImage;
 
-  static const _fileName = 'profile.jpg';
+  static const _profileKey = 'profile_image_path';
 
   @override
   void initState() {
@@ -25,41 +24,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadSavedImage() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dir.path, _fileName));
+    final prefs = await SharedPreferences.getInstance();
+    final path = prefs.getString(_profileKey);
+
+    if (path == null) return;
+
+    final file = File(path);
     if (await file.exists()) {
       setState(() => _profileImage = file);
     }
   }
 
   Future<void> _takePhoto() async {
-    final picked = await _picker.pickImage(
-      source: ImageSource.camera,
-      imageQuality: 80,
-      maxWidth: 800,
-    );
+    try {
+      final picked = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+        maxWidth: 900,
+      );
 
-    if (picked == null) return;
+      if (picked == null) return;
 
-    final dir = await getApplicationDocumentsDirectory();
-    final savedPath = p.join(dir.path, _fileName);
+      final savedFile = File(picked.path);
 
-    final savedFile = await File(picked.path).copy(savedPath);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_profileKey, savedFile.path);
 
-    setState(() => _profileImage = savedFile);
+      setState(() => _profileImage = savedFile);
 
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile photo updated')),
-    );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile photo updated')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Camera failed: $e')),
+      );
+    }
   }
 
   Future<void> _removePhoto() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dir.path, _fileName));
-    if (await file.exists()) {
-      await file.delete();
-    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_profileKey);
+
     setState(() => _profileImage = null);
 
     if (!mounted) return;
@@ -82,7 +90,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             CircleAvatar(
               radius: 64,
               backgroundColor: cs.primary.withOpacity(0.15),
-              backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
+              backgroundImage:
+                  _profileImage != null ? FileImage(_profileImage!) : null,
               child: _profileImage == null
                   ? Icon(Icons.person, size: 64, color: cs.primary)
                   : null,
