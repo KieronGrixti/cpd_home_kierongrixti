@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../models/game.dart';
 import '../providers/cart_provider.dart';
 
+import 'profile_screen.dart';
+
 class StoreScreen extends StatelessWidget {
   const StoreScreen({super.key});
 
@@ -42,6 +44,15 @@ class StoreScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Game Store'),
         actions: [
+          IconButton(
+            tooltip: 'Profile',
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
+              );
+            },
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: Center(
