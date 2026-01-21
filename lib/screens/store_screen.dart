@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/game.dart';
 import '../providers/cart_provider.dart';
 import '../services/notification_service.dart';
+import '../services/analytics_service.dart';
 
 class StoreScreen extends StatelessWidget {
   const StoreScreen({super.key});
@@ -129,8 +130,13 @@ class _GameCard extends StatelessWidget {
               width: double.infinity,
               child: FilledButton(
                 onPressed: () async {
-                  cart.add(game);
+                  await cart.add(game);
                   await NotificationService.showAddedToCart(game.title);
+                  await AnalyticsService.logAddToCart(
+                    gameId: game.id,
+                    title: game.title,
+                    price: game.price,
+                  );
                 },
                 style: FilledButton.styleFrom(
                   backgroundColor: cs.primary,

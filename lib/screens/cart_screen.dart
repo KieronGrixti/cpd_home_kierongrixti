@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/cart_provider.dart';
+import '../services/analytics_service.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -32,7 +33,14 @@ class CartScreen extends StatelessWidget {
                 trailing: IconButton(
                   tooltip: 'Remove',
                   icon: const Icon(Icons.delete_outline),
-                  onPressed: () async => cart.remove(game),
+                  onPressed: () async {
+                    await cart.remove(game);
+                    await AnalyticsService.logRemoveFromCart(
+                      gameId: game.id,
+                      title: game.title,
+                      price: game.price,
+                    );
+                  },
                 ),
               );
             },
@@ -58,7 +66,15 @@ class CartScreen extends StatelessWidget {
                 ),
               ),
               FilledButton.icon(
-                onPressed: () async => cart.clear(),
+                onPressed: () async {
+                  final itemCount = cart.items.length;
+                  final totalValue = cart.totalPrice;
+                  await cart.clear();
+                  await AnalyticsService.logClearCart(
+                    itemCount: itemCount,
+                    totalValue: totalValue,
+                  );
+                },
                 icon: const Icon(Icons.clear_all),
                 label: const Text('Clear'),
                 style: FilledButton.styleFrom(
