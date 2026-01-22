@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart'; // for SemanticsDebugger
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -22,7 +23,9 @@ Future<void> main() async {
         cart.loadCart(); // loads saved cart from SharedPreferences
         return cart;
       },
-      child: const MyApp(),
+      child: const SemanticsDebugger( // ACCESSIBILITY TOOL ENABLED
+        child: MyApp(),
+      ),
     ),
   );
 }
@@ -126,7 +129,8 @@ class _HomeShellState extends State<HomeShell> {
                             decoration: BoxDecoration(
                               color: cs.primary,
                               borderRadius: BorderRadius.circular(999),
-                              border: Border.all(color: Colors.white, width: 2),
+                              border:
+                                  Border.all(color: Colors.white, width: 2),
                             ),
                             child: Text(
                               '$cartCount',
