@@ -3,9 +3,14 @@ plugins {
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
 
-    id("com.google.gms.google-services")
 }
 
+// CI-friendly: only apply Google Services if google-services.json exists
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+} else {
+    println("google-services.json not found. Skipping Google Services plugin (CI build).")
+}
 
 android {
     namespace = "com.example.videogame_store"
