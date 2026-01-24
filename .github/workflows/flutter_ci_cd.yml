@@ -38,43 +38,33 @@ jobs:
         run: flutter test || true
 
   cd:
-    name: CD - Build & Upload Artifacts
+    name: CD - Build & Upload APK
     runs-on: ubuntu-latest
-    needs: ci  # Only build if CI passes
+    needs: ci
 
     steps:
-      # 1) Checkout repo code
+      # Checkout repository code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2) Setup Flutter SDK
+      # Setup Flutter SDK
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
-      # 3) Install dependencies
+      # Install dependencies
       - name: Install dependencies
         run: flutter pub get
 
-      # 4) Build Android APK (debug) - quick artifact for testing
+      # Build Android debug APK
       - name: Build debug APK
         run: flutter build apk --debug
 
-      # 5) Build Android App Bundle (release) - closer to real deployment
-      - name: Build release AAB
-        run: flutter build appbundle --release
-
-      # 6) Upload build outputs so they can be downloaded from GitHub Actions
+      # Upload APK as artifact
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
-
-      - name: Upload AAB artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-aab
-          path: build/app/outputs/bundle/release/app-release.aab
